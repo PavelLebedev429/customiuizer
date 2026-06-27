@@ -14,15 +14,26 @@ jobs:
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
-          java-version: '17'
+          java-version: '11'
+
+      - name: Create fake keystore properties
+        run: |
+          echo "storeFile=fake" > keystore.properties
+          echo "storePassword=fake" >> keystore.properties
+          echo "keyAlias=fake" >> keystore.properties
+          echo "keyPassword=fake" >> keystore.properties
+          if [ -d "app" ]; then
+            cp keystore.properties app/keystore.properties
+          fi
+
 
       - name: Build with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew assembleDebug
+          ./gradlew assembleDebug --no-daemon
 
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: fixed-mod-apk
-          path: app/build/outputs/apk/debug/*.apk
+          path: "**/build/outputs/apk/debug/*.apk"
