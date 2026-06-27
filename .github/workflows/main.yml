@@ -10,21 +10,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Set up JDK
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
-
-      - name: Create fake keystore properties
-        run: |
-          echo "storeFile=fake" > keystore.properties
-          echo "storePassword=fake" >> keystore.properties
-          echo "keyAlias=fake" >> keystore.properties
-          echo "keyPassword=fake" >> keystore.properties
-          if [ -d "app" ]; then
-            cp keystore.properties app/keystore.properties
-          fi
 
       - name: Build with Gradle
         run: |
