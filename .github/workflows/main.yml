@@ -9,6 +9,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository }}
+          ref: ${{ github.ref_name }}
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -16,19 +19,21 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
-      - name: Force create keystore properties everywhere
+      - name: Force create keystore properties in runner root
         run: |
-          echo "storeFile=fake" > keystore.properties
-          echo "storePassword=fake" >> keystore.properties
-          echo "keyAlias=fake" >> keystore.properties
-          echo "keyPassword=fake" >> keystore.properties
+          echo "storeFile=fake" > ../keystore.properties
+          echo "storePassword=fake" >> ../keystore.properties
+          echo "keyAlias=fake" >> ../keystore.properties
+          echo "keyPassword=fake" >> ../keystore.properties
+          # На всякий случай дублируем в проект
+          cp ../keystore.properties ./keystore.properties
           mkdir -p app
-          cp keystore.properties app/keystore.properties
-
+          cp ../keystore.properties app/keystore.properties
       - name: Patch compileSdk target
         run: |
           if [ -f "app/build.gradle" ]; then
-            sed -i 's/compileSdk.*/compileSdk 34/g' app/build.gradle
+            sed -i '/compileSdk/d' app/build.gradle
+            sed -i 's/android {/android {\n    compileSdk 34/g' app/build.gradle
           fi
 
       - name: Build with Gradle
