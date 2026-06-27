@@ -1544,7 +1544,16 @@ public class System {
                             } catch (Throwable ignore) {}
                         }
                         else if (view == mOpenFwBtn) {
-                            String miniWindowPkg = (String) XposedHelpers.callMethod(expandNotifyRow, "getMiniWindowTargetPkg");
+                            String miniWindowPkg = null;
+                            try {
+                                miniWindowPkg = (String) XposedHelpers.callMethod(notification, "getPackageName");
+                            } catch (Throwable t) {
+                                try {
+                                    miniWindowPkg = (String) XposedHelpers.callMethod(expandNotifyRow, "getMiniWindowPkgName");
+                                } catch (Throwable t2) {
+                                }
+                            }
+                            
                             PendingIntent notifyIntent = (PendingIntent) XposedHelpers.callMethod(expandNotifyRow, "getPendingIntent");
                             try {
                                 Bundle options = ModuleHelper.getFreeformOptions(mContext, miniWindowPkg, notifyIntent, true);
@@ -1553,6 +1562,7 @@ public class System {
                                 throw new RuntimeException(e);
                             }
                         }
+
                         String ModalControllerForDep = "com.android.systemui.statusbar.notification.modal.ModalController";
                         Object ModalController = ModuleHelper.getDepInstance(lpparam.getClassLoader(), ModalControllerForDep);
                         XposedHelpers.callMethod(ModalController, "animExitModal", "OTHER");
