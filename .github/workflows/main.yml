@@ -19,21 +19,23 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      # Создаем файл keystore в корне раннера (уже проверено, работает)
       - name: Force create keystore properties in runner root
         run: |
           echo "storeFile=fake" > ../keystore.properties
           echo "storePassword=fake" >> ../keystore.properties
           echo "keyAlias=fake" >> ../keystore.properties
           echo "keyPassword=fake" >> ../keystore.properties
-          # На всякий случай дублируем в проект
           cp ../keystore.properties ./keystore.properties
           mkdir -p app
           cp ../keystore.properties app/keystore.properties
-      - name: Patch compileSdk target
+
+      # ПРИНУДИТЕЛЬНО выставляем compileSdk 36 (Android 16), как требует libxposed в логе
+      - name: Patch compileSdk target to Android 16
         run: |
           if [ -f "app/build.gradle" ]; then
             sed -i '/compileSdk/d' app/build.gradle
-            sed -i 's/android {/android {\n    compileSdk 34/g' app/build.gradle
+            sed -i 's/android {/android {\n    compileSdk 36/g' app/build.gradle
           fi
 
       - name: Build with Gradle
