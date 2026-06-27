@@ -16,6 +16,21 @@ jobs:
           distribution: 'zulu'
           java-version: '17'
 
+      - name: Force create keystore properties everywhere
+        run: |
+          echo "storeFile=fake" > keystore.properties
+          echo "storePassword=fake" >> keystore.properties
+          echo "keyAlias=fake" >> keystore.properties
+          echo "keyPassword=fake" >> keystore.properties
+          mkdir -p app
+          cp keystore.properties app/keystore.properties
+
+      - name: Patch compileSdk target
+        run: |
+          if [ -f "app/build.gradle" ]; then
+            sed -i 's/compileSdk.*/compileSdk 34/g' app/build.gradle
+          fi
+
       - name: Build with Gradle
         run: |
           chmod +x gradlew
