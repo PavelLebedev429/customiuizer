@@ -1562,10 +1562,11 @@ public class System {
                                 XposedHelpers.log(t);
                             }
                         }
-
                         try {
                             XposedHelpers.callStaticMethod(XposedHelpers.findClass("com.android.systemui.statusbar.notification.modal.ModalController", lpparam.getClassLoader()), "animExitModal", "OTHER");
-                        } catch (Throwable ignored) {}
+                        } catch (Throwable t) {
+                            XposedHelpers.log("CustoMIUIzer Error (ModalController): " + t.toString());
+                        }
 
                         try {
                             Class<?> dependencyClass = XposedHelpers.findClass("com.android.systemui.Dependency", lpparam.getClassLoader());
@@ -1574,8 +1575,13 @@ public class System {
                             
                             if (mCommandQueue != null) {
                                 XposedHelpers.callMethod(mCommandQueue, "animateCollapsePanels");
+                            } else {
+                                XposedHelpers.log("CustoMIUIzer Error: mCommandQueue object is NULL");
                             }
-                        } catch (Throwable ignored) {}
+                        } catch (Throwable t) {
+                            XposedHelpers.log("CustoMIUIzer Error (CommandQueue): " + t.toString());
+                        }
+
 
 
                     }
