@@ -1544,16 +1544,9 @@ public class System {
                             } catch (Throwable ignore) {}
                         }
                         else if (view == mOpenFwBtn) {
-                            String miniWindowPkg = (String) XposedHelpers.callStaticMethod(
-                                XposedHelpers.findClass("com.android.systemui.statusbar.notification.row.ExpandableNotificationRowInjector", lpparam.classLoader), 
-                                "getMiniWindowTargetPkg", 
-                                expandNotifyRow
-                            );
-                            PendingIntent notifyIntent = (PendingIntent) XposedHelpers.callStaticMethod(
-                                XposedHelpers.findClass("com.android.systemui.statusbar.notification.row.ExpandableNotificationRowInjector", lpparam.classLoader), 
-                                "getPendingIntent", 
-                                expandNotifyRow
-                            );
+                            String miniWindowPkg = (String) XposedHelpers.callStaticMethod(XposedHelpers.findClass("com.android.systemui.statusbar.notification.row.ExpandableNotificationRowInjector", expandNotifyRow.getClass().getClassLoader()), "getMiniWindowTargetPkg", expandNotifyRow);
+
+                            PendingIntent notifyIntent = (PendingIntent) XposedHelpers.callStaticMethod(XposedHelpers.findClass("com.android.systemui.statusbar.notification.row.ExpandableNotificationRowInjector", expandNotifyRow.getClass().getClassLoader()), "getPendingIntent", expandNotifyRow);
                             
                             try {
                                 Bundle options = ModuleHelper.getFreeformOptions(mContext, miniWindowPkg, notifyIntent, true);
@@ -1563,7 +1556,6 @@ public class System {
                             }
                         }
 
-                        
                         try {
                             String ModalControllerForDep = "com.android.systemui.statusbar.notification.modal.ModalController";
                             Object ModalController = ModuleHelper.getDepInstance(lpparam.getClassLoader(), ModalControllerForDep);
