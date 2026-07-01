@@ -1543,16 +1543,26 @@ public class System {
                                 Toast.makeText(mContext, ModuleHelper.getModuleRes(mContext).getString(R.string.force_closed, appName), Toast.LENGTH_SHORT).show();
                             } catch (Throwable ignore) {}
                         }
-                                                else if (view == mOpenFwBtn) {
+                        else if (view == mOpenFwBtn) {
+                            String miniWindowPkg = (String) XposedHelpers.callStaticMethod(
+                                XposedHelpers.findClass("com.android.systemui.statusbar.notification.row.ExpandableNotificationRowInjector", lpparam.classLoader), 
+                                "getMiniWindowTargetPkg", 
+                                expandNotifyRow
+                            );
+                            PendingIntent notifyIntent = (PendingIntent) XposedHelpers.callStaticMethod(
+                                XposedHelpers.findClass("com.android.systemui.statusbar.notification.row.ExpandableNotificationRowInjector", lpparam.classLoader), 
+                                "getPendingIntent", 
+                                expandNotifyRow
+                            );
+                            
                             try {
-                                android.content.Intent launchIntent = mContext.getPackageManager().getLaunchIntentForPackage(pkgName);
-                                if (launchIntent != null) {
-                                    PendingIntent notifyIntent = PendingIntent.getActivity(mContext, 0, launchIntent, PendingIntent.FLAG_IMMUTABLE);
-                                    Bundle options = ModuleHelper.getFreeformOptions(mContext, pkgName, notifyIntent, true);
-                                    notifyIntent.send(mContext, 0, ModuleHelper.getFreeformIntent(pkgName), null, null, null, options);
-                                }
-                            } catch (Throwable ignored) {}
+                                Bundle options = ModuleHelper.getFreeformOptions(mContext, miniWindowPkg, notifyIntent, true);
+                                notifyIntent.send(mContext, 0, ModuleHelper.getFreeformIntent(miniWindowPkg), null, null, null, options);
+                            } catch (PendingIntent.CanceledException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
+
                         
                         try {
                             String ModalControllerForDep = "com.android.systemui.statusbar.notification.modal.ModalController";
