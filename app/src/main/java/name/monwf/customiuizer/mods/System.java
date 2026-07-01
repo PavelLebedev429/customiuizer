@@ -1562,34 +1562,21 @@ public class System {
                                 XposedHelpers.log(t);
                             }
                         }
+
                         try {
                             String ModalControllerForDep = "com.android.systemui.statusbar.notification.modal.ModalController";
                             Object ModalController = ModuleHelper.getDepInstance(lpparam.getClassLoader(), ModalControllerForDep);
-                            
                             if (ModalController != null) {
                                 XposedHelpers.callMethod(ModalController, "animExitModal");
-                            } else {
-                                XposedHelpers.log("CustoMIUIzer (Modal): ModalController object is NULL");
                             }
-                        } catch (Throwable t) {
-                            XposedHelpers.log("CustoMIUIzer Error (Modal): " + t.toString());
-                        }
+                        } catch (Throwable ignored) {}
 
                         try {
                             Object mCommandQueue = ModuleHelper.getDepInstance(lpparam.getClassLoader(), "com.android.systemui.statusbar.CommandQueue");
-                            
                             if (mCommandQueue != null) {
                                 XposedHelpers.callMethod(mCommandQueue, "animateCollapsePanels");
-                            } else {
-                                XposedHelpers.log("CustoMIUIzer (Queue): mCommandQueue object is NULL");
                             }
-                        } catch (Throwable t) {
-                            XposedHelpers.log("CustoMIUIzer Error (Queue): " + t.toString());
-                        }
-
-
-
-
+                        } catch (Throwable ignored) {}
                     }
                 };
                 mInfoBtn.setOnClickListener(itemClick);
