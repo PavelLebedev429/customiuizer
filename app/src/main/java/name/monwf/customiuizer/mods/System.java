@@ -1543,17 +1543,17 @@ public class System {
                                 Toast.makeText(mContext, ModuleHelper.getModuleRes(mContext).getString(R.string.force_closed, appName), Toast.LENGTH_SHORT).show();
                             } catch (Throwable ignore) {}
                         }
-                        else if (view == mOpenFwBtn) {
-                            String miniWindowPkg = ((android.service.notification.StatusBarNotification) XposedHelpers.callMethod(XposedHelpers.callMethod(expandNotifyRow, "getEntry"), "getSbn")).getPackageName();
+else if (view == mOpenFwBtn) {
+    PendingIntent notifyIntent = (PendingIntent) XposedHelpers.callMethod(expandNotifyRow, "getPendingIntent");
+    String miniWindowPkg = notifyIntent != null ? notifyIntent.getCreatorPackage() : "";
+    try {
+        Bundle options = ModuleHelper.getFreeformOptions(mContext, miniWindowPkg, notifyIntent, true);
+        notifyIntent.send(mContext, 0, ModuleHelper.getFreeformIntent(miniWindowPkg), null, null, null, options);
+    } catch (PendingIntent.CanceledException e) {
+        throw new RuntimeException(e);
+    }
+}
 
-                            PendingIntent notifyIntent = (PendingIntent) XposedHelpers.callMethod(expandNotifyRow, "getPendingIntent");
-                            try {
-                                Bundle options = ModuleHelper.getFreeformOptions(mContext, miniWindowPkg, notifyIntent, true);
-                                notifyIntent.send(mContext, 0, ModuleHelper.getFreeformIntent(miniWindowPkg), null, null, null, options);
-                            } catch (PendingIntent.CanceledException e) {
-                                throw new RuntimeException(e);
-                            }
-                        }
                         String ModalControllerForDep = "com.android.systemui.statusbar.notification.modal.ModalController";
                         Object ModalController = ModuleHelper.getDepInstance(lpparam.getClassLoader(), ModalControllerForDep);
                         XposedHelpers.callMethod(ModalController, "animExitModal", "OTHER");
