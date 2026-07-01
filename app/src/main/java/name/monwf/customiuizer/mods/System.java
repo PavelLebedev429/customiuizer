@@ -1563,24 +1563,30 @@ public class System {
                             }
                         }
                         try {
-                            XposedHelpers.callStaticMethod(XposedHelpers.findClass("com.android.systemui.statusbar.notification.modal.ModalController", lpparam.getClassLoader()), "animExitModal", "OTHER");
+                            String ModalControllerForDep = "com.android.systemui.statusbar.notification.modal.ModalController";
+                            Object ModalController = ModuleHelper.getDepInstance(lpparam.getClassLoader(), ModalControllerForDep);
+                            
+                            if (ModalController != null) {
+                                XposedHelpers.callMethod(ModalController, "animExitModal");
+                            } else {
+                                XposedHelpers.log("CustoMIUIzer (Modal): ModalController object is NULL");
+                            }
                         } catch (Throwable t) {
-                            XposedHelpers.log("CustoMIUIzer Error (ModalController): " + t.toString());
+                            XposedHelpers.log("CustoMIUIzer Error (Modal): " + t.toString());
                         }
 
                         try {
-                            Class<?> dependencyClass = XposedHelpers.findClass("com.android.systemui.Dependency", lpparam.getClassLoader());
-                            Class<?> commandQueueClass = XposedHelpers.findClass("com.android.systemui.statusbar.CommandQueue", lpparam.getClassLoader());
-                            Object mCommandQueue = XposedHelpers.callStaticMethod(dependencyClass, "get", commandQueueClass);
+                            Object mCommandQueue = ModuleHelper.getDepInstance(lpparam.getClassLoader(), "com.android.systemui.statusbar.CommandQueue");
                             
                             if (mCommandQueue != null) {
                                 XposedHelpers.callMethod(mCommandQueue, "animateCollapsePanels");
                             } else {
-                                XposedHelpers.log("CustoMIUIzer Error: mCommandQueue object is NULL");
+                                XposedHelpers.log("CustoMIUIzer (Queue): mCommandQueue object is NULL");
                             }
                         } catch (Throwable t) {
-                            XposedHelpers.log("CustoMIUIzer Error (CommandQueue): " + t.toString());
+                            XposedHelpers.log("CustoMIUIzer Error (Queue): " + t.toString());
                         }
+
 
 
 
