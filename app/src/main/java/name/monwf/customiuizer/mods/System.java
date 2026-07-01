@@ -1564,12 +1564,19 @@ public class System {
                         }
 
                         try {
-                            String ModalControllerForDep = "com.android.systemui.statusbar.notification.modal.ModalController";
-                            Object ModalController = ModuleHelper.getDepInstance(lpparam.getClassLoader(), ModalControllerForDep);
-                            XposedHelpers.callMethod(ModalController, "animExitModal", "OTHER");
-                            Object mCommandQueue = ModuleHelper.getDepInstance(lpparam.getClassLoader(), "com.android.systemui.statusbar.CommandQueue");
-                            XposedHelpers.callMethod(mCommandQueue, "animateCollapsePanels", 0, false);
+                            XposedHelpers.callStaticMethod(XposedHelpers.findClass("com.android.systemui.statusbar.notification.modal.ModalController", lpparam.getClassLoader()), "animExitModal", "OTHER");
                         } catch (Throwable ignored) {}
+
+                        try {
+                            Class<?> dependencyClass = XposedHelpers.findClass("com.android.systemui.Dependency", lpparam.getClassLoader());
+                            Class<?> commandQueueClass = XposedHelpers.findClass("com.android.systemui.statusbar.CommandQueue", lpparam.getClassLoader());
+                            Object mCommandQueue = XposedHelpers.callStaticMethod(dependencyClass, "get", commandQueueClass);
+                            
+                            if (mCommandQueue != null) {
+                                XposedHelpers.callMethod(mCommandQueue, "animateCollapsePanels");
+                            }
+                        } catch (Throwable ignored) {}
+
 
                     }
                 };
