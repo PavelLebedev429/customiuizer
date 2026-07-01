@@ -1543,22 +1543,25 @@ public class System {
                                 Toast.makeText(mContext, ModuleHelper.getModuleRes(mContext).getString(R.string.force_closed, appName), Toast.LENGTH_SHORT).show();
                             } catch (Throwable ignore) {}
                         }
-else if (view == mOpenFwBtn) {
-    PendingIntent notifyIntent = (PendingIntent) XposedHelpers.callMethod(expandNotifyRow, "getPendingIntent");
-    String miniWindowPkg = notifyIntent != null ? notifyIntent.getCreatorPackage() : "";
-    try {
-        Bundle options = ModuleHelper.getFreeformOptions(mContext, miniWindowPkg, notifyIntent, true);
-        notifyIntent.send(mContext, 0, ModuleHelper.getFreeformIntent(miniWindowPkg), null, null, null, options);
-    } catch (PendingIntent.CanceledException e) {
-        throw new RuntimeException(e);
-    }
-}
+                                                else if (view == mOpenFwBtn) {
+                            try {
+                                android.content.Intent launchIntent = mContext.getPackageManager().getLaunchIntentForPackage(pkgName);
+                                if (launchIntent != null) {
+                                    PendingIntent notifyIntent = PendingIntent.getActivity(mContext, 0, launchIntent, PendingIntent.FLAG_IMMUTABLE);
+                                    Bundle options = ModuleHelper.getFreeformOptions(mContext, pkgName, notifyIntent, true);
+                                    notifyIntent.send(mContext, 0, ModuleHelper.getFreeformIntent(pkgName), null, null, null, options);
+                                }
+                            } catch (Throwable ignored) {}
+                        }
+                        
+                        try {
+                            String ModalControllerForDep = "com.android.systemui.statusbar.notification.modal.ModalController";
+                            Object ModalController = ModuleHelper.getDepInstance(lpparam.getClassLoader(), ModalControllerForDep);
+                            XposedHelpers.callMethod(ModalController, "animExitModal", "OTHER");
+                            Object mCommandQueue = ModuleHelper.getDepInstance(lpparam.getClassLoader(), "com.android.systemui.statusbar.CommandQueue");
+                            XposedHelpers.callMethod(mCommandQueue, "animateCollapsePanels", 0, false);
+                        } catch (Throwable ignored) {}
 
-                        String ModalControllerForDep = "com.android.systemui.statusbar.notification.modal.ModalController";
-                        Object ModalController = ModuleHelper.getDepInstance(lpparam.getClassLoader(), ModalControllerForDep);
-                        XposedHelpers.callMethod(ModalController, "animExitModal", "OTHER");
-                        Object mCommandQueue = ModuleHelper.getDepInstance(lpparam.getClassLoader(), "com.android.systemui.statusbar.CommandQueue");
-                        XposedHelpers.callMethod(mCommandQueue, "animateCollapsePanels", 0, false);
                     }
                 };
                 mInfoBtn.setOnClickListener(itemClick);
