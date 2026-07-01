@@ -1546,29 +1546,28 @@ public class System {
                         else if (view == mOpenFwBtn) {
                             try {
                                 Class<?> injectorClass = XposedHelpers.findClass("com.android.systemui.statusbar.notification.row.ExpandableNotificationRowInjector", expandNotifyRow.getClass().getClassLoader());
-
+                                
                                 String miniWindowPkg = null;
                                 try {
                                     miniWindowPkg = (String) XposedHelpers.callStaticMethod(injectorClass, "getMiniWindowTargetPkg");
                                 } catch (Throwable e) {
-
                                     miniWindowPkg = (String) XposedHelpers.callMethod(expandNotifyRow, "getMiniWindowTargetPkg");
                                 }
-                                
-
                                 PendingIntent notifyIntent = (PendingIntent) XposedHelpers.callStaticMethod(
                                     injectorClass, 
                                     "getPendingIntent", 
                                     expandNotifyRow
                                 );
+                                
                                 if (miniWindowPkg != null && notifyIntent != null) {
                                     Bundle options = ModuleHelper.getFreeformOptions(mContext, miniWindowPkg, notifyIntent, true);
                                     notifyIntent.send(mContext, 0, ModuleHelper.getFreeformIntent(miniWindowPkg), null, null, null, options);
                                 }
                             } catch (Throwable t) {
-                                XposedBridge.log("CustoMIUIzer Freeform Error: " + t.getMessage());
+                                XposedHelpers.log(t);
                             }
                         }
+
 
                         try {
                             String ModalControllerForDep = "com.android.systemui.statusbar.notification.modal.ModalController";
