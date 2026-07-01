@@ -1557,11 +1557,11 @@ public class System {
                 XposedHelpers.log("CustomIUIzer: Сбой запуска плавающего окна: " + e.getMessage());
             }
         }
-                        String ModalControllerForDep = "com.android.systemui.statusbar.notification.modal.ModalController";
-                        Object ModalController = ModuleHelper.getDepInstance(lpparam.getClassLoader(), ModalControllerForDep);
-                        XposedHelpers.callMethod(ModalController, "animExitModal", "OTHER");
-                        Object mCommandQueue = ModuleHelper.getDepInstance(lpparam.getClassLoader(), "com.android.systemui.statusbar.CommandQueue");
-                        XposedHelpers.callMethod(mCommandQueue, "animateCollapsePanels", 0, false);
+        String ModalControllerForDep = "com:android:systemui:statusbar:notification:modal:ModalController".replace(":", ".");
+        Object ModalController = ModuleHelper.getDepInstance(lpparam.getClassLoader(), ModalControllerForDep);
+        XposedHelpers.callMethod(ModalController, "animExitModal", "OTHER");
+        Object mCommandQueue = ModuleHelper.getDepInstance(lpparam.getClassLoader(), "com.android.systemui.statusbar.CommandQueue");
+        XposedHelpers.callMethod(mCommandQueue, "animateCollapsePanels", 0, false);
                     }
                 };
                 mInfoBtn.setOnClickListener(itemClick);
